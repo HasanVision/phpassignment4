@@ -40,6 +40,10 @@ try {
         <input type="text" name="last_name" value="<?php echo htmlspecialchars($last_name); ?>">
         <input type="submit" value="Search">
     </form>
+    <br>
+    <form action="add_customer_form.php" method="post">
+        <input type="submit" value="Add Customer">
+    </form>
     <h2>Customer List</h2>
     <table border="1">
         <thead>

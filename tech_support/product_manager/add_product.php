@@ -6,18 +6,21 @@ $name = filter_input(INPUT_POST, 'name');
 $version = filter_input(INPUT_POST, 'version', FILTER_VALIDATE_FLOAT);
 $release_date = filter_input(INPUT_POST, 'release_date');
 
+// Convert the release date to the standard format for storage (Y-m-d)
+if ($release_date) {
+    $release_date = date('Y-m-d', strtotime($release_date));
+}
+
+// Check if required fields are filled
 if ($code == NULL || $name == NULL || $version == NULL || $release_date == NULL) {
     $_SESSION['error_message'] = "Invalid product data. Check all fields and try again.";
-    $url = '../errors/error.php';
-    header("Location: " . $url);
+    header("Location: add_product_form.php");
     die();
-
 } else {
     try {
         require_once('../model/database.php');
-        $query = 'INSERT INTO products
-         (productCode, name, version, releaseDate) 
-        VALUES (:code, :name, :version, :release_date)';
+        $query = 'INSERT INTO products (productCode, name, version, releaseDate)
+                  VALUES (:code, :name, :version, :release_date)';
 
         $statement = $db->prepare($query);
         $statement->bindValue(':code', $code);
@@ -27,25 +30,16 @@ if ($code == NULL || $name == NULL || $version == NULL || $release_date == NULL)
         $statement->execute();
         $statement->closeCursor();
 
-        // Redirect to confirmation page
-        $url = 'add_product_confirmation.php';
-        header("Location: " . $url);
+        header("Location: add_product_confirmation.php");
         die();
-        
     } catch (PDOException $e) {
-        // Check if the error is due to a duplicate primary key
-        if ($e->getCode() == 23000) { // Error code for duplicate entry
+        if ($e->getCode() == 23000) {
             $_SESSION['error_message'] = "The product code already exists. Please use a unique product code.";
-            $url = '../errors/error.php';
-            header("Location: " . $url);
-            die();
         } else {
-            // If some other database error occurred
             $_SESSION['error_message'] = "Database error: " . $e->getMessage();
-            $url = '../errors/error.php';
-            header("Location: " . $url);
-            die();
         }
+        header("Location: add_product_form.php");
+        die();
     }
 }
 ?>

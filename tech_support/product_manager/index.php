@@ -1,8 +1,6 @@
 <?php
 require('../model/database.php');
 
-
-
 try {
     $query = 'SELECT * FROM products';
     $statement = $db->prepare($query);
@@ -22,7 +20,7 @@ try {
     <head>
         <meta charset="UTF-8">
         <title>Product Manager</title>
-        <link rel="stylesheet" type="text/css" href="/phpassignment3/tech_support/main.css">
+        <link rel="stylesheet" type="text/css" href="/phpassignment4/tech_support/main.css">
     </head>
 <body>
     <?php
@@ -46,15 +44,24 @@ try {
                 <td><?php echo htmlspecialchars($product['productCode']); ?></td>
                 <td><?php echo htmlspecialchars($product['name']); ?></td>
                 <td><?php echo htmlspecialchars($product['version']); ?></td>
-                <td><?php echo htmlspecialchars($product['releaseDate']); ?></td>
-                <td><form action="delete_product.php" method="post">
-                    <input type="hidden" name="product_code" value="<?php echo htmlspecialchars($product['productCode']); ?>">
-                    <input type="submit" value="Delete">
+                <td>
+                    <?php
+                    // Format the release date as mm-dd-yyyy (without leading zeros)
+                    $release_date = date('n-j-Y', strtotime($product['releaseDate']));
+                    echo htmlspecialchars($release_date);
+                    ?>
+                </td>
+                <td>
+                    <form action="delete_product.php" method="post">
+                        <input type="hidden" name="product_code" value="<?php echo htmlspecialchars($product['productCode']); ?>">
+                        <input type="submit" value="Delete">
+                    </form>
+                </td>
             </tr>
             <?php endforeach; ?>
         </tbody>
     </table>
-    <a href="/phpassignment3/tech_support/product_manager/add_product_form.php">Add product</a>
+    <a href="/phpassignment4/tech_support/product_manager/add_product_form.php">Add product</a>
     <?php
     include('../view/footer.php');
     ?>
